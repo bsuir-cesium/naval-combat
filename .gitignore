@@ -1,3 +1,5 @@
 *.dproj.local
 main.res
 __history/
+__recovery/
+Win32/
