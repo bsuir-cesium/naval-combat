@@ -1,4 +1,4 @@
-program main;
+Ôªøprogram main;
 
 {$APPTYPE CONSOLE}
 {$R *.res}
@@ -8,11 +8,11 @@ uses
 
 const
   FieldLen = 10;
-  CoordLetters = '¿¡¬√ƒ≈∆«» ';
+  CoordLetters = '–ê–ë–í–ì–î–ï–ñ–ó–ò–ö';
   CoordDigits = '123456789';
 
 type
-  TCoord = string[3];
+  TCoord = string[4];
   TStates = (Sea, Ship, Missed, Hurt, Sunk);
   TField = array [1 .. FieldLen, 1 .. FieldLen] of TStates;
 
@@ -33,9 +33,9 @@ begin
       s := utf8ToAnsi(s);
       for var I := 1 to Length(s) do
       begin
-        if s[I] = 'Ã' then
+        if s[I] = '–ú' then
           arr[k, I] := Sea
-        else if s[I] = ' ' then
+        else if s[I] = '–ö' then
           arr[k, I] := Ship
         else if s[I] <> #10 then
         begin
@@ -52,7 +52,7 @@ end;
 
 procedure DrawFields(const Player1Field, Player2Field: TField);
 begin
-  writeln('   | ¿ | ¡ | ¬ | √ | ƒ | ≈ | ∆ | « | » |   |       | ¿ | ¡ | ¬ | √ | ƒ | ≈ | ∆ | « | » |   |');
+  writeln('   | –ê | –ë | –í | –ì | –î | –ï | –ñ | –ó | –ò | –ö |       | –ê | –ë | –í | –ì | –î | –ï | –ñ | –ó | –ò | –ö |');
   for var I := 1 to FieldLen do
   begin
     write(I:2, ' |');
@@ -61,11 +61,11 @@ begin
       if (Player1Field[I, j] = Ship) or (Player1Field[I, j] = Sea) then
         write(' * |')
       else if Player1Field[I, j] = Missed then
-        write(' œ |')
+        write(' –ü |')
       else if Player1Field[I, j] = Hurt then
         write(' P |')
       else if Player1Field[I, j] = Sunk then
-        write(' ” |');
+        write(' –£ |');
     end;
     write('    ');
     write(I:2, ' |');
@@ -74,11 +74,11 @@ begin
       if (Player2Field[I, j] = Ship) or (Player1Field[I, j] = Sea) then
         write(' * |')
       else if Player2Field[I, j] = Missed then
-        write(' œ |')
+        write(' –ü |')
       else if Player2Field[I, j] = Hurt then
         write(' P |')
       else if Player2Field[I, j] = Sunk then
-        write(' ” |');
+        write(' –£ |');
     end;
     writeln;
   end;
@@ -89,6 +89,7 @@ function CheckCoord(const coord: TCoord): boolean;
 var
   len: integer;
 begin
+  // –î–æ–±–∞–≤–∏—Ç—å –ø—Ä–æ–≤–µ—Ä–∫—É –Ω–∞ —É–∂–µ –∑–∞—é–∑–∞–Ω—É—é –∫–æ—Ä–¥—É
   len := Length(coord);
   if (len > 3) or (len < 2) then
     Exit(false)
@@ -107,12 +108,12 @@ begin
   while True do
   begin
     writeln;
-    writeln('’Ó‰ Ë„ÓÍ‡ ÌÓÏÂ ', hod);
-    write('¬‚Â‰ËÚÂ ÍÓÓ‰ËÌ‡ÚÛ: ');
+    writeln('–•–æ–¥ –∏–≥—Ä–æ–∫–∞ –Ω–æ–º–µ—Ä ', hod);
+    write('–í–≤–µ–¥–∏—Ç–µ –∫–æ–æ—Ä–¥–∏–Ω–∞—Ç—É: ');
     Readln(coord);
     if not CheckCoord(coord) then
     begin
-      writeln('Œ¯Ë·Í‡ ‚‚Ó‰‡, ÔÓ‚ÚÓËÚÂ ÔÓÔ˚ÚÍÛ');
+      writeln('–û—à–∏–±–∫–∞ –≤–≤–æ–¥–∞, –ø–æ–≤—Ç–æ—Ä–∏—Ç–µ –ø–æ–ø—ã—Ç–∫—É');
       continue;
     end;
 
@@ -152,7 +153,7 @@ begin
     end;
   end
   else
-    writeln('ÕÂ‚ÂÌ˚È ÙÓÏ‡Ú Ù‡ÈÎ‡ ËÎË Ù‡ÈÎ ÌÂ Ì‡È‰ÂÌ');
+    writeln('–ù–µ–≤–µ—Ä–Ω—ã–π —Ñ–æ—Ä–º–∞—Ç —Ñ–∞–π–ª–∞ –∏–ª–∏ —Ñ–∞–π–ª –Ω–µ –Ω–∞–π–¥–µ–Ω');
   Readln;
 
 end.
