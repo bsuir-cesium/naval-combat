@@ -142,18 +142,118 @@ begin
   end;
 end;
 
+procedure CheckDeath(var field: TField; const X, Y: integer);
+var
+  h, w: integer;
+  flagShipH, flagShipW, flagSea: boolean;
+begin
+  flagShipH := True;
+  flagSea := false;
+  h := X;
+  w := Y;
+  while (h > 0) and not(flagSea) do
+  begin
+    if (field[h, Y] = Sea) or (field[h, Y] = Missed) then
+      flagSea := True
+    else if field[h, Y] = Ship then
+      flagShipH := false;
+    h := h - 1;
+  end;
+  h := X;
+  flagSea := false;
+  while (h < 11) and not(flagSea) do
+  begin
+    if (field[h, Y] = Sea) or (field[h, Y] = Missed) then
+      flagSea := True
+    else if field[h, Y] = Ship then
+      flagShipH := false;
+    h := h + 1;
+  end;
+  if not(flagShipH) then
+  begin
+    flagSea := false;
+    while (w > 0) and not(flagSea) do
+    begin
+      if (field[X, w] = Sea) or (field[X, w] = Missed) then
+        flagSea := True
+      else if field[X, w] = Ship then
+        flagShipW := false;
+      w := w - 1;
+    end;
+    w := Y;
+    flagSea := false;
+    while (w < 11) and not(flagSea) do
+    begin
+      if (field[X, w] = Sea) or (field[X, w] = Missed) then
+        flagSea := True
+      else if field[X, w] = Ship then
+        flagShipW := false;
+      w := w + 1;
+    end;
+  end;
+
+  h := X;
+  w := Y;
+  flagSea := false;
+  if flagShipH then
+  begin
+    while (h > 0) and not(flagSea) do
+    begin
+      if (field[h, Y] = Sea) or (field[h, Y] = Missed) then
+        flagSea := True
+      else
+        field[h, Y] := Sunk;
+      h := h - 1;
+    end;
+    h := X;
+    flagSea := false;
+    while (h < 11) and not(flagSea) do
+    begin
+      if (field[h, Y] = Sea) or (field[h, Y] = Missed) then
+        flagSea := True
+      else
+        field[h, Y] := Sunk;
+      h := h + 1;
+    end;
+  end
+  else if flagShipW then
+  begin
+    flagSea := false;
+    while (w > 0) and not(flagSea) do
+    begin
+      if (field[X, w] = Sea) or (field[X, w] = Missed) then
+        flagSea := True
+      else
+        field[X, w] := Sunk;
+      w := w - 1;
+    end;
+    w := Y;
+    flagSea := false;
+    while (w < 11) and not(flagSea) do
+    begin
+      if (field[X, w] = Sea) or (field[X, w] = Missed) then
+        flagSea := True
+      else
+        field[X, w] := Sunk;
+      w := w + 1;
+    end;
+  end;
+
+end;
+
 procedure Fire(var field: TField; const X, Y: integer; var move: boolean);
 begin
   if field[X, Y] = Sea then
   begin
     field[X, Y] := Missed;
+    writeln('Промах!');
     move := not move;
   end
   else if field[X, Y] = Ship then
   begin
     field[X, Y] := Hurt;
+    CheckDeath(field, X, Y);
   end;
-
   Readln;
 end;
 
@@ -179,16 +279,16 @@ begin
   Fire(field, X, Y, move);
 end;
 
-function IsVictory(const field: TField): Boolean;
+function IsVictory(const field: TField): boolean;
 var
-  i, j: Integer;
+  I, j: integer;
 begin
   for I := 1 to FieldLen do
   begin
     for j := 1 to FieldLen do
     begin
-      if (field[i, j] = Ship) or (field[i, j] <> Ship) then
-        Exit(False);
+      if (field[I, j] = Ship) or (field[I, j] <> Ship) then
+        Exit(false);
     end;
   end;
   Exit(True);
@@ -218,8 +318,8 @@ begin
         PlayerMove(1, Player2Field, coord, move);
         if IsVictory(Player2Field) then
         begin
-          Writeln('Игрок 1 победил!');
-          ReadLn;
+          writeln('Игрок 1 победил!');
+          Readln;
           Exit;
         end;
       end
@@ -228,8 +328,8 @@ begin
         PlayerMove(2, Player1Field, coord, move);
         if IsVictory(Player1Field) then
         begin
-          Writeln('Игрок 2 победил!');
-          ReadLn;
+          writeln('Игрок 2 победил!');
+          Readln;
           Exit;
         end;
       end;
