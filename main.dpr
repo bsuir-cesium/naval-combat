@@ -26,15 +26,15 @@ var
   Origin: TCoord;
 begin
   stdout := GetStdHandle(STD_OUTPUT_HANDLE);
-  Win32Check(stdout<>INVALID_HANDLE_VALUE);
+  Win32Check(stdout <> INVALID_HANDLE_VALUE);
   Win32Check(GetConsoleScreenBufferInfo(stdout, csbi));
   ConsoleSize := csbi.dwSize.X * csbi.dwSize.Y;
   Origin.X := 0;
   Origin.Y := 0;
   Win32Check(FillConsoleOutputCharacter(stdout, ' ', ConsoleSize, Origin,
     NumWritten));
-  Win32Check(FillConsoleOutputAttribute(stdout, csbi.wAttributes, ConsoleSize, Origin,
-    NumWritten));
+  Win32Check(FillConsoleOutputAttribute(stdout, csbi.wAttributes, ConsoleSize,
+    Origin, NumWritten));
   Win32Check(SetConsoleCursorPosition(stdout, Origin));
 end;
 
@@ -75,6 +75,7 @@ end;
 procedure DrawFields(const Player1Field, Player2Field: TField);
 begin
   ClearScreen;
+  writeln('                  Игрок 1                                         Игрок 2                   ');
   writeln('   | А | Б | В | Г | Д | Е | Ж | З | И | К |       | А | Б | В | Г | Д | Е | Ж | З | И | К |');
   for var I := 1 to FieldLen do
   begin
@@ -108,21 +109,24 @@ begin
 
 end;
 
-procedure ConvertCoord(const coord: TUserCoord; var x, y: integer;
+procedure ConvertCoord(const coord: TUserCoord; var X, Y: integer;
   const field: TField);
 begin
-  y := Pos(coord[1], CoordLetters);
-  if length(coord) = 3 then x := 10 else x := Pos(coord[2], CoordDigits);
+  Y := Pos(coord[1], CoordLetters);
+  if Length(coord) = 3 then
+    X := 10
+  else
+    X := Pos(coord[2], CoordDigits);
 end;
 
-function CheckCoord(const coord: TUserCoord; const field: TField; var x, y: Integer): Boolean;
+function CheckCoord(const coord: TUserCoord; const field: TField;
+  var X, Y: integer): boolean;
 var
   len: integer;
 begin
-  // Добавить проверку на уже заюзаную корду
   len := Length(coord);
   if (len > 3) or (len < 2) then
-    Exit(False)
+    Exit(false)
   else if Pos(coord[1], CoordLetters) = 0 then
     Exit(false)
   else if Pos(coord[2], CoordDigits) = 0 then
@@ -131,23 +135,32 @@ begin
     Exit(false)
   else
   begin
-    ConvertCoord(coord, x, y, field);
-    writeln(x, ' ', y);
-    if (field[x, y] <> Sea) and (field[x, y] <> Ship) then
-      Exit(False);
+    ConvertCoord(coord, X, Y, field);
+    if (field[X, Y] <> Sea) and (field[X, Y] <> Ship) then
+      Exit(false);
     Exit(True);
   end;
 end;
 
-procedure Fire(var field: TField; const x, y: Integer);
+procedure Fire(var field: TField; const X, Y: integer; var move: boolean);
 begin
-  readln;
+  if field[X, Y] = Sea then
+  begin
+    field[X, Y] := Missed;
+    move := not move;
+  end
+  else if field[X, Y] = Ship then
+  begin
+    field[X, Y] := Hurt;
+  end;
+
+  Readln;
 end;
 
 procedure PlayerMove(const user: integer; var field: TField;
-  var coord: TUserCoord);
+  var coord: TUserCoord; var move: boolean);
 var
-  x, y: Integer;
+  X, Y: integer;
 begin
   while True do
   begin
@@ -155,7 +168,7 @@ begin
     writeln('Ход игрока номер ', user);
     write('Введите координату: ');
     Readln(coord);
-    if not CheckCoord(coord, field, x, y) then
+    if not CheckCoord(coord, field, X, Y) then
     begin
       writeln('Невалидная координата, повторите попытку');
       continue;
@@ -163,7 +176,7 @@ begin
     break;
   end;
 
-  fire(field, x, y);
+  Fire(field, X, Y, move);
 end;
 
 var
@@ -187,13 +200,12 @@ begin
       DrawFields(Player1Field, Player2Field);
       if move then
       begin
-        PlayerMove(1, Player2Field, coord);
+        PlayerMove(1, Player2Field, coord, move);
       end
       else
       begin
-        PlayerMove(2, Player1Field, coord);
+        PlayerMove(2, Player1Field, coord, move);
       end;
-      move := not move;
     end;
   end
   else
