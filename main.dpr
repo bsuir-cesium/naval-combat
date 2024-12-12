@@ -1,8 +1,5 @@
 ﻿program main;
 
-{$APPTYPE CONSOLE}
-{$R *.res}
-
 uses
   SysUtils;
 
@@ -21,17 +18,16 @@ var
   f: textfile;
   s: string[200];
   k: integer;
+  I: integer;
 begin
   k := 1;
-  if FileExists(fname) then
-  begin
-    AssignFile(f, fname);
+    Assign(f, fname);
     Reset(f);
     while (not EOF(f)) do
     begin
       Readln(f, s);
       s := utf8ToAnsi(s);
-      for var I := 1 to Length(s) do
+      for I := 1 to Length(s) do
       begin
         if s[I] = 'М' then
           arr[k, I] := Sea
@@ -44,19 +40,18 @@ begin
       end;
       Inc(k);
     end;
-    CloseFile(f);
-  end
-  else
-    isCorrect := false;
+    Close(f);
 end;
 
 procedure DrawFields(const Player1Field, Player2Field: TField);
+var
+  I, j: integer;
 begin
   writeln('   | А | Б | В | Г | Д | Е | Ж | З | И | К |       | А | Б | В | Г | Д | Е | Ж | З | И | К |');
-  for var I := 1 to FieldLen do
+  for I := 1 to FieldLen do
   begin
     write(I:2, ' |');
-    for var j := 1 to FieldLen do
+    for j := 1 to FieldLen do
     begin
       if (Player1Field[I, j] = Ship) or (Player1Field[I, j] = Sea) then
         write(' * |')
@@ -69,7 +64,7 @@ begin
     end;
     write('    ');
     write(I:2, ' |');
-    for var j := 1 to FieldLen do
+    for j := 1 to FieldLen do
     begin
       if (Player2Field[I, j] = Ship) or (Player1Field[I, j] = Sea) then
         write(' * |')
@@ -132,8 +127,8 @@ begin
   move := True;
   isCorrect := True;
   isGameOver := false;
-  ReadFile(Player1Field, '../../player1ships.txt', isCorrect);
-  ReadFile(Player2Field, '../../player2ships.txt', isCorrect);
+  ReadFile(Player1Field, './player1ships.txt', isCorrect);
+  ReadFile(Player2Field, './player2ships.txt', isCorrect);
 
   if isCorrect then
   begin

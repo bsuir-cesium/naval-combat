@@ -1,3 +1,6 @@
 *.dproj.local
 main.res
 __history/
+
+Win32/
+*.o
