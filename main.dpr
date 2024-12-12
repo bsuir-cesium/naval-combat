@@ -179,6 +179,21 @@ begin
   Fire(field, X, Y, move);
 end;
 
+function IsVictory(const field: TField): Boolean;
+var
+  i, j: Integer;
+begin
+  for I := 1 to FieldLen do
+  begin
+    for j := 1 to FieldLen do
+    begin
+      if (field[i, j] = Ship) or (field[i, j] <> Ship) then
+        Exit(False);
+    end;
+  end;
+  Exit(True);
+end;
+
 var
   Player1Field, Player2Field: TField;
   isCorrect, isGameOver: boolean;
@@ -201,10 +216,22 @@ begin
       if move then
       begin
         PlayerMove(1, Player2Field, coord, move);
+        if IsVictory(Player2Field) then
+        begin
+          Writeln('Игрок 1 победил!');
+          ReadLn;
+          Exit;
+        end;
       end
       else
       begin
         PlayerMove(2, Player1Field, coord, move);
+        if IsVictory(Player1Field) then
+        begin
+          Writeln('Игрок 2 победил!');
+          ReadLn;
+          Exit;
+        end;
       end;
     end;
   end
