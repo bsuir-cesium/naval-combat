@@ -144,101 +144,99 @@ end;
 
 procedure CheckDeath(var field: TField; const X, Y: integer);
 var
-  h, w: integer;
+  h, w, hlow, hhigh, wlow, whigh: integer;
   flagShipH, flagShipW, flagSea: boolean;
 begin
-  flagShipH := True;
-  flagSea := false;
-  h := X;
-  w := Y;
-  while (h > 0) and not(flagSea) do
+  hhigh := X;
+  hlow := X;
+  whigh := Y;
+  wlow := Y;
+  h := X - 1;
+  while (h > 0) do
   begin
-    if (field[h, Y] = Sea) or (field[h, Y] = Missed) then
-      flagSea := True
-    else if field[h, Y] = Ship then
-      flagShipH := false;
+    if (field[h, Y] = Ship) then
+      Exit()
+    else if field[h, Y] = Hurt then
+    begin
+      flagShipW := false;
+      flagShipH := True;
+      hlow := h;
+    end
+    else if field[h, Y] = Sea then
+      break;
     h := h - 1;
   end;
-  h := X;
-  flagSea := false;
-  while (h < 11) and not(flagSea) do
+  h := X + 1;
+  while (h < 11) do
   begin
-    if (field[h, Y] = Sea) or (field[h, Y] = Missed) then
-      flagSea := True
-    else if field[h, Y] = Ship then
-      flagShipH := false;
+    if (field[h, Y] = Ship) then
+      Exit()
+    else if field[h, Y] = Hurt then
+    begin
+      flagShipW := false;
+      flagShipH := True;
+      hhigh := h;
+    end
+    else if field[h, Y] = Sea then
+      break;
     h := h + 1;
   end;
-  if not(flagShipH) then
+
+  w := Y - 1;
+  while (w > 0) and not(flagShipH) do
   begin
-    flagSea := false;
-    while (w > 0) and not(flagSea) do
+    if (field[X, w] = Ship) then
+      Exit()
+    else if field[X, w] = Hurt then
     begin
-      if (field[X, w] = Sea) or (field[X, w] = Missed) then
-        flagSea := True
-      else if field[X, w] = Ship then
-        flagShipW := false;
-      w := w - 1;
-    end;
-    w := Y;
-    flagSea := false;
-    while (w < 11) and not(flagSea) do
+      flagShipH := false;
+      flagShipW := True;
+      wlow := w;
+    end
+    else if field[X, w] = Sea then
+      break;
+    w := w - 1;
+  end;
+  w := Y + 1;
+  while (w < 11) and not(flagShipH) do
+  begin
+    if (field[X, w] = Ship) then
+      Exit()
+    else if field[X, w] = Hurt then
     begin
-      if (field[X, w] = Sea) or (field[X, w] = Missed) then
-        flagSea := True
-      else if field[X, w] = Ship then
-        flagShipW := false;
-      w := w + 1;
-    end;
+      flagShipH := false;
+      flagShipW := True;
+      whigh := w;
+    end
+    else if field[X, w] = Sea then
+      break;
+    w := w + 1;
   end;
 
-  h := X;
-  w := Y;
-  flagSea := false;
   if flagShipH then
   begin
-    while (h > 0) and not(flagSea) do
+    h := hlow;
+    while (h <= hhigh) do
     begin
-      if (field[h, Y] = Sea) or (field[h, Y] = Missed) then
-        flagSea := True
+      if field[h, Y] = Hurt then
+        field[h, Y] := Sunk
       else
-        field[h, Y] := Sunk;
-      h := h - 1;
-    end;
-    h := X;
-    flagSea := false;
-    while (h < 11) and not(flagSea) do
-    begin
-      if (field[h, Y] = Sea) or (field[h, Y] = Missed) then
-        flagSea := True
-      else
-        field[h, Y] := Sunk;
+        break;
       h := h + 1;
     end;
   end
   else if flagShipW then
   begin
-    flagSea := false;
-    while (w > 0) and not(flagSea) do
+    w := wlow;
+    while (w <= whigh) do
     begin
-      if (field[X, w] = Sea) or (field[X, w] = Missed) then
-        flagSea := True
+      if field[X, w] = Hurt then
+        field[X, w] := Sunk
       else
-        field[X, w] := Sunk;
-      w := w - 1;
-    end;
-    w := Y;
-    flagSea := false;
-    while (w < 11) and not(flagSea) do
-    begin
-      if (field[X, w] = Sea) or (field[X, w] = Missed) then
-        flagSea := True
-      else
-        field[X, w] := Sunk;
+        break;
       w := w + 1;
     end;
-  end;
-
+  end
 end;
 
 procedure Fire(var field: TField; const X, Y: integer; var move: boolean);
