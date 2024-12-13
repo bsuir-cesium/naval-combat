@@ -10,6 +10,7 @@ uses
 const
   FieldLen = 10;
   CoordLetters = 'АБВГДЕЖЗИК';
+  CoordSmallLetters = 'абвгдежзик';
   CoordDigits = '123456789';
 
 type
@@ -112,7 +113,10 @@ end;
 procedure ConvertCoord(const coord: TUserCoord; var X, Y: integer;
   const field: TField);
 begin
-  Y := Pos(coord[1], CoordLetters);
+  if Pos(coord[1], CoordLetters) = 0 then
+    Y := Pos(coord[1], CoordSmallLetters)
+  else
+    Y := Pos(coord[1], CoordLetters);
   if Length(coord) = 3 then
     X := 10
   else
@@ -127,7 +131,8 @@ begin
   len := Length(coord);
   if (len > 3) or (len < 2) then
     Exit(false)
-  else if Pos(coord[1], CoordLetters) = 0 then
+  else if (Pos(coord[1], CoordLetters) = 0) and
+    (Pos(coord[1], CoordSmallLetters) = 0) then
     Exit(false)
   else if Pos(coord[2], CoordDigits) = 0 then
     Exit(false)
@@ -321,7 +326,7 @@ begin
   begin
     for j := 1 to FieldLen do
     begin
-      if (field[I, j] = Ship) or (field[I, j] = hurt) then
+      if (field[I, j] = Ship) or (field[I, j] = Hurt) then
         Exit(false);
     end;
   end;
