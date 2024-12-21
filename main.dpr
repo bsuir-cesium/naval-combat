@@ -130,20 +130,21 @@ var
 begin
   len := Length(coord);
   if (len > 3) or (len < 2) then
-    Exit(false)
+    CheckCoord := false
   else if (Pos(coord[1], CoordLetters) = 0) and
     (Pos(coord[1], CoordSmallLetters) = 0) then
-    Exit(false)
+    CheckCoord := false
   else if Pos(coord[2], CoordDigits) = 0 then
-    Exit(false)
+    CheckCoord := false
   else if (len = 3) and (Copy(coord, 2, 2) <> '10') then
-    Exit(false)
+    CheckCoord := false
   else
   begin
     ConvertCoord(coord, X, Y, field);
     if (field[X, Y] <> Sea) and (field[X, Y] <> Ship) then
-      Exit(false);
-    Exit(True);
+      CheckCoord := false
+    else
+      CheckCoord := True;
   end;
 end;
 
@@ -353,6 +354,7 @@ begin
   isDead := false;
   h := X;
   w := Y;
+  { TODO -oRusu, Cesium -cStructured programming : Avoiding the continue }
   while (h > 0) and not(flagSea) do
   begin
     if (field[h, Y] = Sea) or (field[h, Y] = Missed) then
@@ -500,8 +502,10 @@ procedure PlayerMove(const user: integer; var field: TField;
   var coord: TUserCoord; var move: boolean);
 var
   X, Y: integer;
+  CoordFlag: Boolean;
 begin
-  while True do
+  CoordFlag := True;
+  while CoordFlag do
   begin
     writeln;
     writeln('Ход игрока номер ', user);
@@ -510,9 +514,9 @@ begin
     if not CheckCoord(coord, field, X, Y) then
     begin
       writeln('Невалидная координата, повторите попытку');
-      continue;
-    end;
-    break;
+    end
+    else
+      CoordFlag := False;
   end;
 
   Fire(field, X, Y, move);
@@ -522,15 +526,15 @@ function IsVictory(const field: TField): boolean;
 var
   I, j: integer;
 begin
+  IsVictory := True;
   for I := 1 to FieldLen do
   begin
     for j := 1 to FieldLen do
     begin
       if (field[I, j] = Ship) or (field[I, j] = Hurt) then
-        Exit(false);
+        IsVictory := false;
     end;
   end;
-  Exit(True);
 end;
 
 var
@@ -557,10 +561,9 @@ begin
         PlayerMove(1, Player2Field, coord, move);
         if IsVictory(Player2Field) then
         begin
-        DrawFields(Player1Field, Player2Field);
+          DrawFields(Player1Field, Player2Field);
           writeln('Игрок 1 победил!');
-          Readln;
-          Exit;
+          isGameOver := True;
         end;
       end
       else
@@ -568,13 +571,13 @@ begin
         PlayerMove(2, Player1Field, coord, move);
         if IsVictory(Player1Field) then
         begin
-        DrawFields(Player1Field, Player2Field);
+          DrawFields(Player1Field, Player2Field);
           writeln('Игрок 2 победил!');
-          Readln;
-          Exit;
+          isGameOver := True;
         end;
       end;
     end;
+    writeln('Игра окончена, нажмите Enter для выхода...');
   end
   else
     writeln('Неверный формат файла или файл не найден');
