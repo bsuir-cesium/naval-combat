@@ -154,193 +154,116 @@ procedure DrawMissedAfterShipDeath(const isVertical: boolean; var field: TField;
 var
   I, j: Integer;
 begin
-  if isVertical then
+  if (X = 10) and (Y = 1) then
   begin
-    if X = 10 then
-    begin
-      if field[X - 1, Y] = Sea then
-        field[X - 1, Y] := Missed;
-      if Y = 1 then
-      begin
-        if field[X - 1, Y + 1] = Sea then
-          field[X - 1, Y + 1] := Missed;
-        field[X, Y + 1] := Missed;
-      end
-      else if Y = 10 then
-      begin
-        if field[X - 1, Y - 1] = Sea then
-          field[X - 1, Y - 1] := Missed;
-        field[X, Y - 1] := Missed;
-      end
-      else
-      begin
-        if field[X - 1, Y - 1] = Sea then
-          field[X - 1, Y - 1] := Missed;
-        if field[X - 1, Y + 1] = Sea then
-          field[X - 1, Y + 1] := Missed;
+    if field[X - 1, Y] = Sea then
+      field[X - 1, Y] := Missed;
+    if field[X, Y + 1] = Sea then
+      field[X, Y + 1] := Missed;
+    if field[X - 1, Y + 1] = Sea then
+      field[X - 1, Y + 1] := Missed;
+  end
+  else if (X = 10) and (Y = 10) then
+  begin
+    if field[X - 1, Y] = Sea then
+      field[X - 1, Y] := Missed;
+    if field[X, Y - 1] = Sea then
+      field[X, Y - 1] := Missed;
+    if field[X - 1, Y - 1] = Sea then
+      field[X - 1, Y - 1] := Missed;
+  end
+  else if (X = 1) and (Y = 1) then
+  begin
+    if field[X + 1, Y] = Sea then
+      field[X + 1, Y] := Missed;
+    if field[X, Y + 1] = Sea then
+      field[X, Y + 1] := Missed;
+    if field[X + 1, Y + 1] = Sea then
+      field[X + 1, Y + 1] := Missed;
+  end
+  else if (X = 1) and (Y = 10) then
+  begin
+    if field[X + 1, Y] = Sea then
+      field[X + 1, Y] := Missed;
+    if field[X, Y - 1] = Sea then
+      field[X, Y - 1] := Missed;
+    if field[X + 1, Y - 1] = Sea then
+      field[X + 1, Y - 1] := Missed;
+  end
 
-        field[X, Y + 1] := Missed;
-        field[X, Y - 1] := Missed;
-      end;
-    end
-    else if X = 1 then
-    begin
-      if field[X + 1, Y] = Sea then
-        field[X + 1, Y] := Missed;
-      if Y = 1 then
-      begin
-        if field[X + 1, Y + 1] = Sea then
-          field[X + 1, Y + 1] := Missed;
-        field[X, Y + 1] := Missed;
-      end
-      else if Y = 10 then
-      begin
-        if field[X + 1, Y - 1] = Sea then
-          field[X + 1, Y - 1] := Missed;
-        field[X, Y - 1] := Missed;
-      end
-      else
-      begin
-        if field[X + 1, Y - 1] = Sea then
-          field[X + 1, Y - 1] := Missed;
-        if field[X + 1, Y + 1] = Sea then
-          field[X + 1, Y + 1] := Missed;
-
-        field[X, Y + 1] := Missed;
-        field[X, Y - 1] := Missed;
-      end;
-    end
-    else
-    begin
-      if field[X - 1, Y] = Sea then
-        field[X - 1, Y] := Missed;
-      if field[X + 1, Y] = Sea then
-        field[X + 1, Y] := Missed;
-      if Y = 1 then
-      begin
-        if field[X - 1, Y + 1] = Sea then
-          field[X - 1, Y + 1] := Missed;
-        if field[X + 1, Y + 1] = Sea then
-          field[X + 1, Y + 1] := Missed;
-
-        field[X, Y + 1] := Missed;
-      end
-      else if Y = 10 then
-      begin
-        if field[X - 1, Y - 1] = Sea then
-          field[X - 1, Y - 1] := Missed;
-        if field[X + 1, Y - 1] = Sea then
-          field[X + 1, Y - 1] := Missed;
-
-        field[X, Y - 1] := Missed;
-      end
-      else
-      begin
-        if field[X - 1, Y - 1] = Sea then
-          field[X - 1, Y - 1] := Missed;
-        if field[X - 1, Y + 1] = Sea then
-          field[X - 1, Y + 1] := Missed;
-        if field[X + 1, Y - 1] = Sea then
-          field[X + 1, Y - 1] := Missed;
-        if field[X + 1, Y + 1] = Sea then
-          field[X + 1, Y + 1] := Missed;
-
-        field[X, Y + 1] := Missed;
-        field[X, Y - 1] := Missed;
-      end;
-    end;
-
+  else if (X = 10) then
+  begin
+    if field[X - 1, Y] = Sea then
+      field[X - 1, Y] := Missed;
+    if field[X, Y + 1] = Sea then
+      field[X, Y + 1] := Missed;
+    if field[X - 1, Y + 1] = Sea then
+      field[X - 1, Y + 1] := Missed;
+    if field[X, Y - 1] = Sea then
+      field[X, Y - 1] := Missed;
+    if field[X - 1, Y - 1] = Sea then
+      field[X - 1, Y - 1] := Missed;
+  end
+  else if (Y = 10) then
+  begin
+    if field[X - 1, Y] = Sea then
+      field[X - 1, Y] := Missed;
+    if field[X, Y - 1] = Sea then
+      field[X, Y - 1] := Missed;
+    if field[X - 1, Y - 1] = Sea then
+      field[X - 1, Y - 1] := Missed;
+    if field[X + 1, Y] = Sea then
+      field[X + 1, Y] := Missed;
+    if field[X + 1, Y - 1] = Sea then
+      field[X + 1, Y - 1] := Missed;
+  end
+  else if (X = 1) then
+  begin
+    if field[X + 1, Y] = Sea then
+      field[X + 1, Y] := Missed;
+    if field[X, Y + 1] = Sea then
+      field[X, Y + 1] := Missed;
+    if field[X + 1, Y + 1] = Sea then
+      field[X + 1, Y + 1] := Missed;
+    if field[X, Y - 1] = Sea then
+      field[X, Y - 1] := Missed;
+    if field[X + 1, Y - 1] = Sea then
+      field[X + 1, Y - 1] := Missed;
+  end
+  else if (Y = 1) then
+  begin
+    if field[X + 1, Y] = Sea then
+      field[X + 1, Y] := Missed;
+    if field[X, Y + 1] = Sea then
+      field[X, Y + 1] := Missed;
+    if field[X + 1, Y + 1] = Sea then
+      field[X + 1, Y + 1] := Missed;
+    if field[X - 1, Y] = Sea then
+      field[X - 1, Y] := Missed;
+    if field[X - 1, Y + 1] = Sea then
+      field[X - 1, Y + 1] := Missed;
   end
   else
   begin
-    if Y = 10 then
-    begin
-      if field[X, Y - 1] = Sea then
-        field[X, Y - 1] := Missed;
-      if X = 1 then
-      begin
-        if field[X + 1, Y - 1] = Sea then
-          field[X + 1, Y - 1] := Missed;
-        field[X + 1, Y] := Missed;
-      end
-      else if X = 10 then
-      begin
-        if field[X - 1, Y - 1] = Sea then
-          field[X - 1, Y - 1] := Missed;
-        field[X - 1, Y] := Missed;
-      end
-      else
-      begin
-        if field[X - 1, Y - 1] = Sea then
-          field[X - 1, Y - 1] := Missed;
-        if field[X + 1, Y - 1] = Sea then
-          field[X + 1, Y - 1] := Missed;
-        field[X + 1, Y] := Missed;
-        field[X - 1, Y] := Missed;
-      end;
-    end
-    else if Y = 1 then
-    begin
-      if field[X, Y + 1] = Sea then
-        field[X, Y + 1] := Missed;
-      if X = 1 then
-      begin
-        if field[X + 1, Y + 1] = Sea then
-          field[X + 1, Y + 1] := Missed;
-        field[X + 1, Y] := Missed;
-      end
-      else if X = 10 then
-      begin
-        if field[X - 1, Y - 1] = Sea then
-          field[X - 1, Y - 1] := Missed;
-        field[X - 1, Y] := Missed;
-      end
-      else
-      begin
-        if field[X - 1, Y + 1] = Sea then
-          field[X - 1, Y + 1] := Missed;
-        if field[X + 1, Y + 1] = Sea then
-          field[X + 1, Y + 1] := Missed;
-        field[X + 1, Y] := Missed;
-        field[X - 1, Y] := Missed;
-      end;
-    end
-    else
-    begin
-      if field[X, Y - 1] = Sea then
-        field[X, Y - 1] := Missed;
-      if field[X, Y + 1] = Sea then
-        field[X, Y + 1] := Missed;
-      if X = 1 then
-      begin
-        if field[X + 1, Y - 1] = Sea then
-          field[X + 1, Y - 1] := Missed;
-        if field[X + 1, Y + 1] = Sea then
-          field[X + 1, Y + 1] := Missed;
-        field[X + 1, Y] := Missed;
-      end
-      else if X = 10 then
-      begin
-        if field[X - 1, Y - 1] = Sea then
-          field[X - 1, Y - 1] := Missed;
-        if field[X - 1, Y - 1] = Sea then
-          field[X - 1, Y - 1] := Missed;
-        field[X - 1, Y] := Missed;
-      end
-      else
-      begin
-        if field[X - 1, Y - 1] = Sea then
-          field[X - 1, Y - 1] := Missed;
-        if field[X + 1, Y - 1] = Sea then
-          field[X + 1, Y - 1] := Missed;
-        if field[X - 1, Y + 1] = Sea then
-          field[X - 1, Y + 1] := Missed;
-        if field[X + 1, Y + 1] = Sea then
-          field[X + 1, Y + 1] := Missed;
-        field[X + 1, Y] := Missed;
-        field[X - 1, Y] := Missed;
-      end;
-    end;
+    if field[X + 1, Y] = Sea then
+      field[X + 1, Y] := Missed;
+    if field[X - 1, Y] = Sea then
+      field[X - 1, Y] := Missed;
+
+    if field[X, Y + 1] = Sea then
+      field[X, Y + 1] := Missed;
+    if field[X, Y - 1] = Sea then
+      field[X, Y - 1] := Missed;
+
+    if field[X + 1, Y - 1] = Sea then
+      field[X + 1, Y - 1] := Missed;
+    if field[X - 1, Y + 1] = Sea then
+      field[X - 1, Y + 1] := Missed;
+
+    if field[X + 1, Y + 1] = Sea then
+      field[X + 1, Y + 1] := Missed;
+    if field[X - 1, Y - 1] = Sea then
+      field[X - 1, Y - 1] := Missed;
   end;
 end;
 
@@ -361,11 +284,12 @@ begin
     if (field[h, Y] = Sea) or (field[h, Y] = Missed) then
     begin
       flagSea := True;
-      continue;
     end
     else if field[h, Y] = Ship then
       flagShipH := false;
-    h := h - 1;
+    if not flagSea then
+      h := h - 1;
+
   end;
   oneVert := X - h;
   h := X;
@@ -375,11 +299,11 @@ begin
     if (field[h, Y] = Sea) or (field[h, Y] = Missed) then
     begin
       flagSea := True;
-      continue;
     end
     else if field[h, Y] = Ship then
       flagShipH := false;
-    h := h + 1;
+    if not flagSea then
+      h := h + 1;
   end;
   if h - X > oneVert then
     oneVert := h - X;
@@ -390,11 +314,11 @@ begin
     if (field[X, w] = Sea) or (field[X, w] = Missed) then
     begin
       flagSea := True;
-      continue;
     end
     else if field[X, w] = Ship then
       flagShipW := false;
-    w := w - 1;
+    if not flagSea then
+      w := w - 1;
   end;
   oneHor := Y - w;
   w := Y;
@@ -403,13 +327,12 @@ begin
   begin
     if (field[X, w] = Sea) or (field[X, w] = Missed) then
     begin
-
       flagSea := True;
-      continue;
     end
     else if field[X, w] = Ship then
       flagShipW := false;
-    w := w + 1;
+    if not flagSea then
+      w := w + 1;
   end;
   if w - Y > oneHor then
     oneHor := w - Y;
@@ -570,10 +493,11 @@ begin
     j := 1;
     while j <= FieldLen do
     begin
-      if (i = 1) and (field[I, j] = Ship) and (field[I + 1, j] <> Ship) then
+      if (I = 1) and (field[I, j] = Ship) and (field[I + 1, j] <> Ship) then
         Inc(count)
-      else if (i = FieldLen) and (field[I, j] = Ship) and (field[I - 1, j] <> Ship) then
-        Inc(count)   
+      else if (I = FieldLen) and (field[I, j] = Ship) and
+        (field[I - 1, j] <> Ship) then
+        Inc(count)
       else if (field[I, j] = Ship) and (field[I + 1, j] <> Ship) and
         (field[I - 1, j] <> Ship) then
         Inc(count)
@@ -603,11 +527,13 @@ begin
     I := 1;
     while I <= FieldLen do
     begin
-      if (j=1) and (field[I, j] = Ship) and (field[I, j + 1] <> Ship) then
+      if (j = 1) and (field[I, j] = Ship) and (field[I, j + 1] <> Ship) then
         Inc(count)
-      else if (j=FieldLen) and (field[I, j] = Ship) and (field[I, j - 1] <> Ship) then
+      else if (j = FieldLen) and (field[I, j] = Ship) and
+        (field[I, j - 1] <> Ship) then
         Inc(count)
-      else if (field[I, j] = Ship) and (field[I, j + 1] <> Ship) and (field[I, j - 1] <> Ship)then
+      else if (field[I, j] = Ship) and (field[I, j + 1] <> Ship) and
+        (field[I, j - 1] <> Ship) then
         Inc(count)
       else if field[I, j] = Sea then
       begin
@@ -630,7 +556,7 @@ begin
   end;
 
   for I := 1 to 4 do
-    if countsList[I] <> 5 - i then
+    if countsList[I] <> 5 - I then
       isCorrect := false;
 
 end;
