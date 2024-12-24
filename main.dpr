@@ -57,7 +57,9 @@ begin
       s := utf8ToAnsi(s);
       for var I := 1 to Length(s) do
       begin
-        if s[I] = 'М' then
+        if Length(s) <> FieldLen then
+          isCorrect := false
+        else if s[I] = 'М' then
           arr[k, I] := Sea
         else if s[I] = 'К' then
           arr[k, I] := Ship
@@ -492,22 +494,23 @@ begin
     j := 1;
     while j <= FieldLen do
     begin
-      if (I = 1) and (field[I, j] = Ship) and (field[I + 1, j] <> Ship) then
-        Inc(count)
-      else if (I = FieldLen) and (field[I, j] = Ship) and
-        (field[I - 1, j] <> Ship) then
-        Inc(count)
-      else if (field[I, j] = Ship) and (field[I + 1, j] <> Ship) and
-        (field[I - 1, j] <> Ship) then
-        Inc(count)
-      else if field[I, j] = Sea then
+      if field[I, j] = Sea then
       begin
         if (count > 0) and (count < 5) then
           countsList[count] := countsList[count] + 1
         else if count > 4 then
           isCorrect := false;
         count := 0;
-      end;
+      end
+      else if (I = 1) and (field[I, j] = Ship) and (field[I + 1, j] <> Ship)
+      then
+        Inc(count)
+      else if (I = FieldLen) and (field[I, j] = Ship) and
+        (field[I - 1, j] <> Ship) then
+        Inc(count)
+      else if (I <> FieldLen) and (field[I, j] = Ship) and
+        (field[I + 1, j] <> Ship) and (field[I - 1, j] <> Ship) then
+        Inc(count);
       Inc(j);
     end;
     if count > 0 then
@@ -526,22 +529,25 @@ begin
     I := 1;
     while I <= FieldLen do
     begin
-      if (j = 1) and (field[I, j] = Ship) and (field[I, j + 1] <> Ship) then
-        Inc(count)
-      else if (j = FieldLen) and (field[I, j] = Ship) and
-        (field[I, j - 1] <> Ship) then
-        Inc(count)
-      else if (field[I, j] = Ship) and (field[I, j + 1] <> Ship) and
-        (field[I, j - 1] <> Ship) then
-        Inc(count)
-      else if field[I, j] = Sea then
+      if field[I, j] = Sea then
       begin
         if (count > 1) and (count < 5) then
           countsList[count] := countsList[count] + 1
         else if count > 4 then
           isCorrect := false;
         count := 0;
-      end;
+      end
+      else if (j = 1) and (field[I, j] = Ship) and (field[I, j + 1] <> Ship)
+      then
+        Inc(count)
+      else if (j = FieldLen) and (field[I, j] = Ship) and
+        (field[I, j - 1] <> Ship) then
+      begin
+        Inc(count)
+      end
+      else if (j <> FieldLen) and (field[I, j] = Ship) and
+        (field[I, j + 1] <> Ship) and (field[I, j - 1] <> Ship) then
+        Inc(count);
       Inc(I);
     end;
     if count > 0 then
