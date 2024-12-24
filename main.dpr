@@ -17,6 +17,7 @@ type
   TUserCoord = string[4];
   TStates = (Sea, Ship, Missed, Hurt, Sunk);
   TField = array [1 .. FieldLen, 1 .. FieldLen] of TStates;
+  TShipsCount = array [1 .. 4] of Integer;
 
 procedure ClearScreen;
 var
@@ -43,7 +44,7 @@ procedure ReadFile(var arr: TField; fname: string; var isCorrect: boolean);
 var
   f: textfile;
   s: string[200];
-  k: integer;
+  k: Integer;
 begin
   k := 1;
   if FileExists(fname) then
@@ -110,7 +111,7 @@ begin
 
 end;
 
-procedure ConvertCoord(const coord: TUserCoord; var X, Y: integer;
+procedure ConvertCoord(const coord: TUserCoord; var X, Y: Integer;
   const field: TField);
 begin
   if Pos(coord[1], CoordLetters) = 0 then
@@ -124,9 +125,9 @@ begin
 end;
 
 function CheckCoord(const coord: TUserCoord; const field: TField;
-  var X, Y: integer): boolean;
+  var X, Y: Integer): boolean;
 var
-  len: integer;
+  len: Integer;
 begin
   len := Length(coord);
   if (len > 3) or (len < 2) then
@@ -149,9 +150,9 @@ begin
 end;
 
 procedure DrawMissedAfterShipDeath(const isVertical: boolean; var field: TField;
-  const X, Y: integer);
+  const X, Y: Integer);
 var
-  I, j: integer;
+  I, j: Integer;
 begin
   if isVertical then
   begin
@@ -343,9 +344,9 @@ begin
   end;
 end;
 
-procedure CheckDeath(var field: TField; const X, Y: integer);
+procedure CheckDeath(var field: TField; const X, Y: Integer);
 var
-  h, w, oneVert, oneHor: integer;
+  h, w, oneVert, oneHor: Integer;
   flagShipH, flagShipW, flagSea, isDead: boolean;
 begin
   flagShipW := True;
@@ -481,7 +482,7 @@ begin
 
 end;
 
-procedure Fire(var field: TField; const X, Y: integer; var move: boolean);
+procedure Fire(var field: TField; const X, Y: Integer; var move: boolean);
 begin
   if field[X, Y] = Sea then
   begin
@@ -498,11 +499,11 @@ begin
   Readln;
 end;
 
-procedure PlayerMove(const user: integer; var field: TField;
+procedure PlayerMove(const user: Integer; var field: TField;
   var coord: TUserCoord; var move: boolean);
 var
-  X, Y: integer;
-  CoordFlag: Boolean;
+  X, Y: Integer;
+  CoordFlag: boolean;
 begin
   CoordFlag := True;
   while CoordFlag do
@@ -516,7 +517,7 @@ begin
       writeln('Невалидная координата, повторите попытку');
     end
     else
-      CoordFlag := False;
+      CoordFlag := false;
   end;
 
   Fire(field, X, Y, move);
@@ -524,7 +525,7 @@ end;
 
 function IsVictory(const field: TField): boolean;
 var
-  I, j: integer;
+  I, j: Integer;
 begin
   IsVictory := True;
   for I := 1 to FieldLen do
@@ -535,6 +536,103 @@ begin
         IsVictory := false;
     end;
   end;
+end;
+
+procedure CheckField(var isCorrect: boolean; const field: TField);
+var
+  I, j, count: Integer;
+  countsList: TShipsCount;
+begin
+  for I := 2 to FieldLen - 1 do
+  begin
+    for j := 2 to FieldLen - 1 do
+    begin
+      if ((field[I, j] = Ship) and (field[I - 1, j - 1] = Ship)) or
+        ((field[I, j] = Ship) and (field[I + 1, j - 1] = Ship)) or
+        ((field[I, j] = Ship) and (field[I - 1, j + 1] = Ship)) or
+        ((field[I, j] = Ship) and (field[I + 1, j + 1] = Ship)) or
+        ((field[I, j - 1] = Ship) and (field[I - 1, j] = Ship)) or
+        ((field[I, j + 1] = Ship) and (field[I - 1, j] = Ship)) or
+        ((field[I, j + 1] = Ship) and (field[I + 1, j] = Ship)) or
+        ((field[I, j - 1] = Ship) and (field[I + 1, j] = Ship)) then
+      begin
+        isCorrect := false;
+      end;
+    end;
+  end;
+
+  for I := 1 to 4 do
+    countsList[I] := 0;
+
+  count := 0;
+  for I := 1 to FieldLen do
+  begin
+    j := 1;
+    while j <= FieldLen do
+    begin
+      if (i = 1) and (field[I, j] = Ship) and (field[I + 1, j] <> Ship) then
+        Inc(count)
+      else if (i = FieldLen) and (field[I, j] = Ship) and (field[I - 1, j] <> Ship) then
+        Inc(count)   
+      else if (field[I, j] = Ship) and (field[I + 1, j] <> Ship) and
+        (field[I - 1, j] <> Ship) then
+        Inc(count)
+      else if field[I, j] = Sea then
+      begin
+        if (count > 0) and (count < 5) then
+          countsList[count] := countsList[count] + 1
+        else if count > 4 then
+          isCorrect := false;
+        count := 0;
+      end;
+      Inc(j);
+    end;
+    if count > 0 then
+    begin
+      if (count > 0) and (count < 5) then
+        countsList[count] := countsList[count] + 1
+      else if count > 4 then
+        isCorrect := false;
+      count := 0;
+    end;
+  end;
+
+  count := 0;
+  for j := 1 to FieldLen do
+  begin
+    I := 1;
+    while I <= FieldLen do
+    begin
+      if (j=1) and (field[I, j] = Ship) and (field[I, j + 1] <> Ship) then
+        Inc(count)
+      else if (j=FieldLen) and (field[I, j] = Ship) and (field[I, j - 1] <> Ship) then
+        Inc(count)
+      else if (field[I, j] = Ship) and (field[I, j + 1] <> Ship) and (field[I, j - 1] <> Ship)then
+        Inc(count)
+      else if field[I, j] = Sea then
+      begin
+        if (count > 1) and (count < 5) then
+          countsList[count] := countsList[count] + 1
+        else if count > 4 then
+          isCorrect := false;
+        count := 0;
+      end;
+      Inc(I);
+    end;
+    if count > 0 then
+    begin
+      if (count > 1) and (count < 5) then
+        countsList[count] := countsList[count] + 1
+      else if count > 4 then
+        isCorrect := false;
+      count := 0;
+    end;
+  end;
+
+  for I := 1 to 4 do
+    if countsList[I] <> 5 - i then
+      isCorrect := false;
+
 end;
 
 var
@@ -549,12 +647,13 @@ begin
   isGameOver := false;
   ReadFile(Player1Field, '../../player1ships.txt', isCorrect);
   ReadFile(Player2Field, '../../player2ships.txt', isCorrect);
+  CheckField(isCorrect, Player1Field);
+  CheckField(isCorrect, Player2Field);
 
   if isCorrect then
   begin
     while not isGameOver do
     begin
-
       DrawFields(Player1Field, Player2Field);
       if move then
       begin
