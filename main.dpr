@@ -15,7 +15,7 @@ const
   CoordDigits = '123456789';
 
 type
-  TUserCoord = string[4];
+  TUserCoord = string[7];
   TStates = (Sea, Ship, Missed, Hurt, Sunk);
   TField = array [1 .. FieldLen, 1 .. FieldLen] of TStates;
   TShipsCount = array [1 .. 4] of Integer;
@@ -269,7 +269,7 @@ begin
   end;
 end;
 
-procedure CheckDeath(var field: TField; const X, Y: Integer);
+procedure CheckDeath(var field: TField; const X, Y: Integer; print: Boolean);
 var
   h, w, oneVert, oneHor: Integer;
   flagShipH, flagShipW, flagSea, isDead: boolean;
@@ -280,7 +280,6 @@ begin
   isDead := false;
   h := X;
   w := Y;
-  { TODO -oRusu, Cesium -cStructured programming : Avoiding the continue }
   while (h > 0) and not(flagSea) do
   begin
     if (field[h, Y] = Sea) or (field[h, Y] = Missed) then
@@ -401,13 +400,15 @@ begin
     end;
   end;
 
-
-  if isDead then
-    writeln('Убил')
-  else
-    writeln('Ранил');
-    PlaySound('../../zvuk-vzryva.wav', 0, SND_SYNC );
-   PlaySound('../../sea.wav', 0, SND_ASYNC or SND_LOOP);
+  if print then
+  begin
+    if isDead then
+      writeln('Убил')
+    else
+      writeln('Ранил');
+    PlaySound('../../zvuk-vzryva.wav', 0, SND_SYNC);
+    PlaySound('../../sea.wav', 0, SND_ASYNC or SND_LOOP);
+  end;
 end;
 
 procedure Fire(var field: TField; const X, Y: Integer; var move: boolean);
@@ -416,23 +417,82 @@ begin
   begin
     field[X, Y] := Missed;
 
-
     writeln('Промах!');
-    PlaySound('../../bulck.wav', 0, SND_SYNC );
-   PlaySound('../../sea.wav', 0, SND_ASYNC or SND_LOOP);
+    PlaySound('../../bulck.wav', 0, SND_SYNC);
+    PlaySound('../../sea.wav', 0, SND_ASYNC or SND_LOOP);
     move := not move;
   end
   else if field[X, Y] = Ship then
   begin
     field[X, Y] := Hurt;
-    CheckDeath(field, X, Y);
+    CheckDeath(field, X, Y, True);
   end;
   writeln('Нажмите Enter для продолжения...');
   Readln;
 end;
 
+procedure FireBomb(var field: TField; var coord: TUserCoord; var move: boolean);
+var
+  X, Y, I, j: Integer;
+  CoordFlag, isValidCoord, hit: boolean;
+begin
+  CoordFlag := True;
+  while CoordFlag do
+  begin
+    write('Введите координату для сброса бомбы: ');
+    Readln(coord);
+    isValidCoord := CheckCoord(coord, field, X, Y);
+    if not isValidCoord or (X < 2) or (X > 9) or (Y < 2) or (Y > 9) then
+    begin
+      writeln('Невалидная координата, повторите попытку');
+    end
+    else
+    begin
+      CoordFlag := false;
+    end;
+  end;
+
+  hit := False;
+  for I := X - 1 to X + 1 do
+  begin
+    for j := Y - 1 to Y + 1 do
+    begin
+      if field[i, j] = Sea then
+      begin
+        field[i, j] := Missed;
+      end
+      else if field[i, j] = Ship then
+      begin
+        hit := True;
+        field[i, j] := Hurt;
+        CheckDeath(field, i, j, False);
+      end;
+    end;
+  end;
+
+  if not hit then
+  begin
+    writeln('Ох, какой промах!');
+    move := not move;
+    PlaySound('../../bulck.wav', 0, SND_SYNC);
+  end
+  else
+  begin
+    writeln('Есть попадание!');
+    PlaySound('../../zvuk-vzryva.wav', 0, SND_SYNC);
+  end;
+  PlaySound('../../sea.wav', 0, SND_ASYNC or SND_LOOP);
+  writeln('Нажмите Enter для продолжения...');
+  Readln;
+end;
+
+procedure FireCluster(var field: TField; var move: boolean);
+begin
+
+end;
+
 procedure PlayerMove(const user: Integer; var field: TField;
-  var coord: TUserCoord; var move: boolean);
+  var coord: TUserCoord; var move, extra: boolean);
 var
   X, Y: Integer;
   CoordFlag: boolean;
@@ -444,15 +504,29 @@ begin
     writeln('Ход игрока номер ', user);
     write('Введите координату: ');
     Readln(coord);
-    if not CheckCoord(coord, field, X, Y) then
+    if (coord = 'бомба') and extra then
     begin
-      writeln('Невалидная координата, повторите попытку');
-    end
-    else
       CoordFlag := false;
+      extra := False;
+      FireBomb(field, coord, move);
+    end
+    else if (coord = 'кассета') and extra then
+    begin
+      CoordFlag := false;
+      extra := False;
+      FireCluster(field, move);
+    end
+    else if ((coord = 'бомба') or (coord = 'кассета')) and not extra then
+      writeln('Лимит исчерпан, повторите попытку')
+    else if not CheckCoord(coord, field, X, Y) then
+      writeln('Невалидная координата, повторите попытку')
+    else
+    begin
+      CoordFlag := false;
+      Fire(field, X, Y, move);
+    end;
   end;
 
-  Fire(field, X, Y, move);
 end;
 
 function IsVictory(const field: TField): boolean;
@@ -574,16 +648,16 @@ begin
 
 end;
 
-
-
 var
   Player1Field, Player2Field: TField;
-  isCorrect, isGameOver: boolean;
+  isCorrect, isGameOver, extraPlayer1, extraPlayer2: boolean;
   move, gameMode: boolean;
   coord: TUserCoord;
 
 begin
   move := True;
+  extraPlayer1 := True;
+  extraPlayer2 := True;
   isCorrect := True;
   isGameOver := false;
   ReadFile(Player1Field, '../../player1ships.txt', isCorrect);
@@ -598,7 +672,7 @@ begin
       DrawFields(Player1Field, Player2Field);
       if move then
       begin
-        PlayerMove(1, Player2Field, coord, move);
+        PlayerMove(1, Player2Field, coord, move, extraPlayer1);
         if IsVictory(Player2Field) then
         begin
           DrawFields(Player1Field, Player2Field);
@@ -608,7 +682,7 @@ begin
       end
       else
       begin
-        PlayerMove(2, Player1Field, coord, move);
+        PlayerMove(2, Player1Field, coord, move, extraPlayer2);
         if IsVictory(Player1Field) then
         begin
           DrawFields(Player1Field, Player2Field);
