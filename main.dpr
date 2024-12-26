@@ -153,8 +153,6 @@ begin
 end;
 
 procedure DrawMissedAfterShipDeath(var field: TField; const X, Y: Integer);
-var
-  I, j: Integer;
 begin
   if (X = 10) and (Y = 1) then
   begin
@@ -490,7 +488,7 @@ procedure FireCluster(var field: TField; var coord: TUserCoord;
   var move: boolean);
 var
   I, j: Integer;
-  CoordFlag, isVertical, hit, allMissed: boolean;
+  CoordFlag, isVertical, hit: boolean;
 begin
   CoordFlag := True;
   while CoordFlag do
@@ -505,6 +503,7 @@ begin
     end
     else
     begin
+      CoordFlag := false;
       if (Pos(coord, CoordSmallLetters) <> 0) then
       begin
         j := Pos(coord, CoordSmallLetters);
@@ -552,7 +551,7 @@ begin
         CheckDeath(field, j, I, false);
       end;
     end;
-    Inc(i);
+    Inc(I);
   end;
 
   if not hit then
@@ -731,7 +730,7 @@ end;
 var
   Player1Field, Player2Field: TField;
   isCorrect, isGameOver, extraPlayer1, extraPlayer2: boolean;
-  move, gameMode: boolean;
+  move: boolean;
   coord: TUserCoord;
 
 begin
