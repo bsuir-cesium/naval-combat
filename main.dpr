@@ -152,7 +152,7 @@ begin
   end;
 end;
 
-procedure DrawMissedAfterShipDeath(var field: TField; const X, Y: Integer);
+procedure DrawMissedAfterShipDeath(const isVertical:boolean;var field: TField; const X, Y: Integer);
 begin
 
   if isVertical then
@@ -425,7 +425,7 @@ begin
         flagSea := True
       else
       begin
-        DrawMissedAfterShipDeath(field, h, Y);
+        DrawMissedAfterShipDeath(true,field, h, Y);
         field[h, Y] := Sunk;
         isDead := True;
       end;
@@ -439,7 +439,7 @@ begin
         flagSea := True
       else
       begin
-        DrawMissedAfterShipDeath(field, h, Y);
+        DrawMissedAfterShipDeath(true,field, h, Y);
         field[h, Y] := Sunk;
         isDead := True;
       end;
@@ -455,7 +455,7 @@ begin
         flagSea := True
       else
       begin
-        DrawMissedAfterShipDeath(field, X, w);
+        DrawMissedAfterShipDeath(false,field, X, w);
         field[X, w] := Sunk;
         isDead := True;
       end;
@@ -469,7 +469,7 @@ begin
         flagSea := True
       else
       begin
-        DrawMissedAfterShipDeath(field, X, w);
+        DrawMissedAfterShipDeath(false,field, X, w);
         field[X, w] := Sunk;
         isDead := True;
       end;
