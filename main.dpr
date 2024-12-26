@@ -153,8 +153,6 @@ begin
 end;
 
 procedure DrawMissedAfterShipDeath(var field: TField; const X, Y: Integer);
-var
-  I, j: Integer;
 begin
   if (X = 10) and (Y = 1) then
   begin
@@ -401,13 +399,12 @@ begin
     end;
   end;
 
-
   if isDead then
     writeln('Убил')
   else
     writeln('Ранил');
-    PlaySound('../../zvuk-vzryva.wav', 0, SND_SYNC );
-   PlaySound('../../sea.wav', 0, SND_ASYNC or SND_LOOP);
+  PlaySound('../../zvuk-vzryva.wav', 0, SND_SYNC);
+  PlaySound('../../sea.wav', 0, SND_ASYNC or SND_LOOP);
 end;
 
 procedure Fire(var field: TField; const X, Y: Integer; var move: boolean);
@@ -416,10 +413,9 @@ begin
   begin
     field[X, Y] := Missed;
 
-
     writeln('Промах!');
-    PlaySound('../../bulck.wav', 0, SND_SYNC );
-   PlaySound('../../sea.wav', 0, SND_ASYNC or SND_LOOP);
+    PlaySound('../../bulck.wav', 0, SND_SYNC);
+    PlaySound('../../sea.wav', 0, SND_ASYNC or SND_LOOP);
     move := not move;
   end
   else if field[X, Y] = Ship then
@@ -574,20 +570,18 @@ begin
 
 end;
 
-
-
 var
   Player1Field, Player2Field: TField;
   isCorrect, isGameOver: boolean;
-  move, gameMode: boolean;
+  move: boolean;
   coord: TUserCoord;
 
 begin
   move := True;
   isCorrect := True;
   isGameOver := false;
-  ReadFile(Player1Field, '../../player1ships.txt', isCorrect);
-  ReadFile(Player2Field, '../../player2ships.txt', isCorrect);
+  ReadFile(Player1Field, 'player1ships.txt', isCorrect);
+  ReadFile(Player2Field, 'player2ships.txt', isCorrect);
   CheckField(isCorrect, Player1Field);
   CheckField(isCorrect, Player2Field);
   PlaySound('../../sea.wav', 0, SND_ASYNC or SND_LOOP);
