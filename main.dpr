@@ -5,7 +5,8 @@
 
 uses
   SysUtils,
-  Windows;
+  Windows,
+  mmsystem;
 
 const
   FieldLen = 10;
@@ -399,11 +400,14 @@ begin
       w := w + 1;
     end;
   end;
+
+
   if isDead then
     writeln('Убил')
   else
     writeln('Ранил');
-
+    PlaySound('../../zvuk-vzryva.wav', 0, SND_SYNC );
+   PlaySound('../../sea.wav', 0, SND_ASYNC or SND_LOOP);
 end;
 
 procedure Fire(var field: TField; const X, Y: Integer; var move: boolean);
@@ -411,7 +415,11 @@ begin
   if field[X, Y] = Sea then
   begin
     field[X, Y] := Missed;
+
+
     writeln('Промах!');
+    PlaySound('../../bulck.wav', 0, SND_SYNC );
+   PlaySound('../../sea.wav', 0, SND_ASYNC or SND_LOOP);
     move := not move;
   end
   else if field[X, Y] = Ship then
@@ -566,6 +574,8 @@ begin
 
 end;
 
+
+
 var
   Player1Field, Player2Field: TField;
   isCorrect, isGameOver: boolean;
@@ -580,7 +590,7 @@ begin
   ReadFile(Player2Field, '../../player2ships.txt', isCorrect);
   CheckField(isCorrect, Player1Field);
   CheckField(isCorrect, Player2Field);
-
+  PlaySound('../../sea.wav', 0, SND_ASYNC or SND_LOOP);
   if isCorrect then
   begin
     while not isGameOver do
