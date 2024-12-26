@@ -5,7 +5,8 @@
 
 uses
   SysUtils,
-  Windows;
+  Windows,
+  mmsystem;
 
 const
   FieldLen = 10;
@@ -152,8 +153,6 @@ begin
 end;
 
 procedure DrawMissedAfterShipDeath(var field: TField; const X, Y: Integer);
-var
-  I, j: Integer;
 begin
   if (X = 10) and (Y = 1) then
   begin
@@ -399,11 +398,12 @@ begin
       w := w + 1;
     end;
   end;
+
   if isDead then
     writeln('Убил')
   else
     writeln('Ранил');
-
+  PlaySound('zvuk-vzryva.wav', 0, SND_ASYNC);
 end;
 
 procedure Fire(var field: TField; const X, Y: Integer; var move: boolean);
@@ -411,7 +411,9 @@ begin
   if field[X, Y] = Sea then
   begin
     field[X, Y] := Missed;
+
     writeln('Промах!');
+    PlaySound('bulck.wav', 0, SND_ASYNC);
     move := not move;
   end
   else if field[X, Y] = Ship then
@@ -569,18 +571,17 @@ end;
 var
   Player1Field, Player2Field: TField;
   isCorrect, isGameOver: boolean;
-  move, gameMode: boolean;
+  move: boolean;
   coord: TUserCoord;
 
 begin
   move := True;
   isCorrect := True;
   isGameOver := false;
-  ReadFile(Player1Field, '../../player1ships.txt', isCorrect);
-  ReadFile(Player2Field, '../../player2ships.txt', isCorrect);
+  ReadFile(Player1Field, 'player1ships.txt', isCorrect);
+  ReadFile(Player2Field, 'player2ships.txt', isCorrect);
   CheckField(isCorrect, Player1Field);
   CheckField(isCorrect, Player2Field);
-
   if isCorrect then
   begin
     while not isGameOver do
