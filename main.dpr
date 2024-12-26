@@ -403,7 +403,7 @@ begin
     writeln('Убил')
   else
     writeln('Ранил');
-    PlaySound('zvuk-vzryva.wav', 0, SND_ASYNC );
+  PlaySound('zvuk-vzryva.wav', 0, SND_ASYNC);
 end;
 
 procedure Fire(var field: TField; const X, Y: Integer; var move: boolean);
@@ -413,7 +413,7 @@ begin
     field[X, Y] := Missed;
 
     writeln('Промах!');
-    PlaySound('bulck.wav', 0, SND_ASYNC );
+    PlaySound('bulck.wav', 0, SND_ASYNC);
     move := not move;
   end
   else if field[X, Y] = Ship then
