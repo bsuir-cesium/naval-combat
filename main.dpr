@@ -12,7 +12,7 @@ const
   FieldLen = 10;
   CoordLetters = 'АБВГДЕЖЗИК';
   CoordSmallLetters = 'абвгдежзик';
-  CoordDigits = '123456789';
+  CoordDigits = '12345678910';
 
 type
   TUserCoord = string[7];
@@ -269,7 +269,7 @@ begin
   end;
 end;
 
-procedure CheckDeath(var field: TField; const X, Y: Integer; print: Boolean);
+procedure CheckDeath(var field: TField; const X, Y: Integer; print: boolean);
 var
   h, w, oneVert, oneHor: Integer;
   flagShipH, flagShipW, flagSea, isDead: boolean;
@@ -452,20 +452,20 @@ begin
     end;
   end;
 
-  hit := False;
+  hit := false;
   for I := X - 1 to X + 1 do
   begin
     for j := Y - 1 to Y + 1 do
     begin
-      if field[i, j] = Sea then
+      if field[I, j] = Sea then
       begin
-        field[i, j] := Missed;
+        field[I, j] := Missed;
       end
-      else if field[i, j] = Ship then
+      else if field[I, j] = Ship then
       begin
         hit := True;
-        field[i, j] := Hurt;
-        CheckDeath(field, i, j, False);
+        field[I, j] := Hurt;
+        CheckDeath(field, I, j, false);
       end;
     end;
   end;
@@ -486,9 +486,89 @@ begin
   Readln;
 end;
 
-procedure FireCluster(var field: TField; var move: boolean);
+procedure FireCluster(var field: TField; var coord: TUserCoord;
+  var move: boolean);
+var
+  I, j: Integer;
+  CoordFlag, isVertical, hit, allMissed: boolean;
 begin
+  CoordFlag := True;
+  while CoordFlag do
+  begin
+    write('Введите линию либо столбец для сброса кассетного боеприпаса: ');
+    Readln(coord);
 
+    if (Length(coord) = 0) or ((Pos(coord, CoordSmallLetters) = 0) and
+      (Pos(coord, CoordLetters) = 0) and (Pos(coord, CoordDigits) = 0)) then
+    begin
+      writeln('Невалидная координата, повторите попытку');
+    end
+    else
+    begin
+      if (Pos(coord, CoordSmallLetters) <> 0) then
+      begin
+        j := Pos(coord, CoordSmallLetters);
+        isVertical := True;
+      end
+      else if (Pos(coord, CoordLetters) <> 0) then
+      begin
+        j := Pos(coord, CoordLetters);
+        isVertical := True;
+      end
+      else
+      begin
+        j := Pos(coord, CoordDigits);
+        isVertical := false;
+      end;
+    end;
+  end;
+
+  I := 1;
+  while I <= 10 do
+  begin
+    if isVertical then
+    begin
+      if field[I, j] = Sea then
+      begin
+        field[I, j] := Missed;
+      end
+      else if field[I, j] = Ship then
+      begin
+        hit := True;
+        field[I, j] := Hurt;
+        CheckDeath(field, I, j, false);
+      end;
+    end
+    else
+    begin
+      if field[j, I] = Sea then
+      begin
+        field[j, I] := Missed;
+      end
+      else if field[j, I] = Ship then
+      begin
+        hit := True;
+        field[j, I] := Hurt;
+        CheckDeath(field, j, I, false);
+      end;
+    end;
+    Inc(i);
+  end;
+
+  if not hit then
+  begin
+    writeln('Ох, какой промах!');
+    move := not move;
+    PlaySound('../../bulck.wav', 0, SND_SYNC);
+  end
+  else
+  begin
+    writeln('Есть попадание!');
+    PlaySound('../../zvuk-vzryva.wav', 0, SND_SYNC);
+  end;
+  PlaySound('../../sea.wav', 0, SND_ASYNC or SND_LOOP);
+  writeln('Нажмите Enter для продолжения...');
+  Readln;
 end;
 
 procedure PlayerMove(const user: Integer; var field: TField;
@@ -507,14 +587,14 @@ begin
     if (coord = 'бомба') and extra then
     begin
       CoordFlag := false;
-      extra := False;
+      extra := false;
       FireBomb(field, coord, move);
     end
     else if (coord = 'кассета') and extra then
     begin
       CoordFlag := false;
-      extra := False;
-      FireCluster(field, move);
+      extra := false;
+      FireCluster(field, coord, move);
     end
     else if ((coord = 'бомба') or (coord = 'кассета')) and not extra then
       writeln('Лимит исчерпан, повторите попытку')
